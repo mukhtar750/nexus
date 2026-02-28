@@ -67,6 +67,25 @@
                     class="fas fa-mountain w-5 h-5 mr-3 {{ request()->routeIs('admin.summits.*') ? 'text-white' : 'text-gray-500 group-hover:text-white' }} transition-colors"></i>
                 Summits
             </a>
+
+            {{-- EOI separator --}}
+            <p class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider mt-5 mb-2">NESS 2026</p>
+
+            <a href="{{ route('admin.eois.index') }}"
+                class="group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 {{ request()->routeIs('admin.eois.*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-gray-400 hover:text-white hover:bg-white/5' }}">
+                <i
+                    class="fas fa-handshake w-5 h-5 mr-3 {{ request()->routeIs('admin.eois.*') ? 'text-white' : 'text-gray-500 group-hover:text-white' }} transition-colors"></i>
+                EOI Applications
+                {{-- pending badge --}}
+                @php
+                    $pendingCount = \App\Models\SummitEoi::where('status', 'pending')->count();
+                @endphp
+                @if($pendingCount > 0)
+                    <span class="ml-auto bg-amber-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                        {{ $pendingCount }}
+                    </span>
+                @endif
+            </a>
         </nav>
 
         <!-- User Profile -->

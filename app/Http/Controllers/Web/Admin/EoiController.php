@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Web\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\SummitEoi;
 use App\Models\Summit;
+use App\Mail\EoiSelected;
+use App\Mail\EoiRejected;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class EoiController extends Controller
 {
@@ -62,9 +65,17 @@ class EoiController extends Controller
             'registration_token' => $token,
         ]);
 
+        // Send selection email
+        try {
+            Mail::to($eoi->email)->send(new EoiSelected($eoi));
+            Log::info("EOI selection email sent to {$eoi->email}");
+        } catch (\Throwable $e) {
+            Log::error("Failed to send EOI selection email to {$eoi->email}: " . $e->getMessage());
+        }
+
         Log::info("EOI selected (web): ID {$eoi->id} by Admin ID " . auth()->id());
 
-        return back()->with('success', "✅ {$eoi->full_name} has been selected. Registration token generated.");
+        return back()->with('success', "✅ {$eoi->full_name} has been selected and notified by email.");
     }
 
     public function reject(Request $request, SummitEoi $eoi)
@@ -81,8 +92,16 @@ class EoiController extends Controller
             'registration_token' => null,
         ]);
 
+        // Send rejection email
+        try {
+            Mail::to($eoi->email)->send(new EoiRejected($eoi));
+            Log::info("EOI rejection email sent to {$eoi->email}");
+        } catch (\Throwable $e) {
+            Log::error("Failed to send EOI rejection email to {$eoi->email}: " . $e->getMessage());
+        }
+
         Log::info("EOI rejected (web): ID {$eoi->id} by Admin ID " . auth()->id());
 
-        return back()->with('success', "❌ {$eoi->full_name}'s application has been rejected.");
+        return back()->with('success', "❌ {$eoi->full_name}'s application has been rejected and they have been notified.");
     }
 }

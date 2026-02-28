@@ -6,10 +6,19 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\InvitationController;
+use App\Http\Controllers\Api\SummitEoiController;
 
-Route::post('/auth/register', [AuthController::class, 'register']);
+// Guest registration (open)
 Route::post('/auth/register/guest', [AuthController::class, 'registerGuest']);
 Route::post('/auth/login', [AuthController::class, 'login']);
+
+// ─── EOI (Exporter) ────────────────────────────────────────────────────────
+// Step 1: Submit expression of interest (no account required)
+Route::post('/summits/{summit}/eoi', [SummitEoiController::class, 'store']);
+// Step 2: Check EOI status by email
+Route::post('/summits/eoi/check-status', [SummitEoiController::class, 'checkStatus']);
+// Step 3: Complete registration using admin-issued selection token
+Route::post('/auth/register/from-eoi', [SummitEoiController::class, 'completeRegistration']);
 
 // Public events list (guests can view)
 Route::get('/events', [EventController::class, 'index']);
@@ -56,6 +65,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/users/{user}/approve', [\App\Http\Controllers\Api\AdminController::class, 'approveUser']);
         Route::post('/users/{user}/reject', [\App\Http\Controllers\Api\AdminController::class, 'rejectUser']);
         Route::post('/events/invite', [\App\Http\Controllers\Api\AdminController::class, 'inviteUser']);
+
+        // ─── EOI Management ─────────────────────────────────────────────
+        Route::get('/eois', [SummitEoiController::class, 'index']);
+        Route::get('/eois/{eoi}', [SummitEoiController::class, 'show']);
+        Route::post('/eois/{eoi}/select', [SummitEoiController::class, 'select']);
+        Route::post('/eois/{eoi}/reject', [SummitEoiController::class, 'reject']);
     });
 
     // Events Routes

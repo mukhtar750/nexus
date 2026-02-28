@@ -7,6 +7,7 @@ use App\Http\Controllers\Web\Admin\QuestionController;
 use App\Http\Controllers\Web\Admin\AttendeeController;
 use App\Http\Controllers\Web\Admin\SpeakerController;
 use App\Http\Controllers\Web\Admin\SessionController;
+use App\Http\Controllers\Web\Admin\EoiController;
 
 
 
@@ -52,6 +53,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/summits/{summit}/edit', [\App\Http\Controllers\Web\Admin\SummitController::class, 'edit'])->name('summits.edit');
         Route::put('/summits/{summit}', [\App\Http\Controllers\Web\Admin\SummitController::class, 'update'])->name('summits.update');
         Route::delete('/summits/{summit}', [\App\Http\Controllers\Web\Admin\SummitController::class, 'destroy'])->name('summits.delete');
+
+        // ─── EOI Applications ────────────────────────────────────────────────
+        Route::get('/eois', [EoiController::class, 'index'])->name('eois.index');
+        Route::get('/eois/{eoi}', [EoiController::class, 'show'])->name('eois.show');
+        Route::post('/eois/{eoi}/select', [EoiController::class, 'select'])->name('eois.select');
+        Route::post('/eois/{eoi}/reject', [EoiController::class, 'reject'])->name('eois.reject');
 
         // Event Engagement
         Route::prefix('events/{event}')->name('events.')->group(function () {

@@ -19,41 +19,31 @@ class SummitSeeder extends Seeder
         $abujaEvent = \App\Models\Event::where('title', 'Agriculture Export Masterclass')->first();
 
         \App\Models\Summit::create([
-            'title' => 'Export Summit Port Harcourt',
+            'title' => 'NESS 2026 Sensitization Seminar - Port Harcourt',
             'city' => 'Port Harcourt',
             'zone' => 'South-South Zone',
-            'date' => 'Oct 15 - 17, 2025',
-            'venue' => 'Hotel Presidential',
+            'date' => 'March 26, 2026',
+            'venue' => 'PTDF Centre for Skills Development and Training (CSD), Omagwa-Igwuruta Road, Port Harcourt, Rivers State',
             'is_active' => true,
             'event_id' => null,
         ]);
 
         \App\Models\Summit::create([
-            'title' => 'Export Summit Kano',
+            'title' => 'NESS 2026 Sensitization Seminar - Kano',
             'city' => 'Kano',
             'zone' => 'North-West Zone',
-            'date' => 'Nov 12 - 14, 2025',
-            'venue' => 'Afficent Event Center',
+            'date' => 'April 2, 2026',
+            'venue' => 'Bristol Palace Hotel, 54 Guda Abdullahi Street, Kano',
             'is_active' => true,
             'event_id' => null,
         ]);
 
         \App\Models\Summit::create([
-            'title' => 'Export Summit Abuja',
-            'city' => 'Abuja',
-            'zone' => 'North-Central Zone',
-            'date' => 'Dec 05 - 07, 2025',
-            'venue' => 'International Conference Centre',
-            'is_active' => true,
-            'event_id' => $abujaEvent ? $abujaEvent->id : null,
-        ]);
-
-        \App\Models\Summit::create([
-            'title' => 'Export Summit Lagos',
+            'title' => 'NESS 2026 Sensitization Seminar - Lagos',
             'city' => 'Lagos',
             'zone' => 'South-West Zone',
-            'date' => 'Jan 20 - 22, 2026',
-            'venue' => 'Eko Hotel & Suites',
+            'date' => 'March 30, 2026',
+            'venue' => 'Lagos Marriot Hotel Ikeja, 122 Joel Ogunnaike Street',
             'is_active' => true,
             'event_id' => $lagosEvent ? $lagosEvent->id : null,
         ]);

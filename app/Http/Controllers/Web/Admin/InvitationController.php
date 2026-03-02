@@ -58,15 +58,23 @@ class InvitationController extends Controller
             ]);
         }
 
-        // Send the invitation email
-        Mail::to($validated['email'])->send(new InvitationMailable(
-            $validated['full_name'],
-            $token,
-            $validated['type']
-        ));
+        // Attempt to send the invitation email
+        try {
+            Mail::to($validated['email'])->send(new InvitationMailable(
+                $validated['full_name'],
+                $token,
+                $validated['type']
+            ));
+
+            $message = 'Invitation generated and email sent successfully!';
+        } catch (\Exception $e) {
+            // Log the error if needed, but don't crash the application
+            $message = 'Invitation generated (Token: ' . $token . '), but the email could not be sent. Please send the token manually.';
+        }
 
         return redirect()->route('admin.invitations.index')
-            ->with('success', 'Invitation generated and sent successfully! Token: ' . $token);
+            ->with('success', $message);
+
     }
 
     public function destroy($type, $id)

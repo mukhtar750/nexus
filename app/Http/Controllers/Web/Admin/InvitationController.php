@@ -6,8 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Invitation;
 use App\Models\SpeakerInvitation;
 use App\Models\Summit;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\InvitationMailable;
 
 class InvitationController extends Controller
 {
@@ -55,8 +58,15 @@ class InvitationController extends Controller
             ]);
         }
 
+        // Send the invitation email
+        Mail::to($validated['email'])->send(new InvitationMailable(
+            $validated['full_name'],
+            $token,
+            $validated['type']
+        ));
+
         return redirect()->route('admin.invitations.index')
-            ->with('success', 'Invitation generated successfully! Token: ' . $token);
+            ->with('success', 'Invitation generated and sent successfully! Token: ' . $token);
     }
 
     public function destroy($type, $id)

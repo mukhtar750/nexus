@@ -117,7 +117,7 @@ class AuthController extends Controller
             'email' => $validated['email'],
             'password' => bcrypt($validated['password']),
             'phone' => $validated['phone'],
-            'user_type' => 'guest',
+            'user_type' => 'delegate',
             'status' => 'approved', // Auto-approve guests
             'avatar_url' => $avatarPath,
         ]);

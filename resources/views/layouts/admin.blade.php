@@ -86,6 +86,14 @@
                     </span>
                 @endif
             </a>
+
+            <a href="{{ route('admin.invitations.index') }}"
+                class="group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 {{ request()->routeIs('admin.invitations.*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-gray-400 hover:text-white hover:bg-white/5' }}">
+                <i
+                    class="fas fa-ticket-alt w-5 h-5 mr-3 {{ request()->routeIs('admin.invitations.*') ? 'text-white' : 'text-gray-500 group-hover:text-white' }} transition-colors"></i>
+                Invitation Tokens
+            </a>
+
         </nav>
 
         <!-- User Profile -->

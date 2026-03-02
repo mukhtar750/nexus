@@ -60,6 +60,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/eois/{eoi}/select', [EoiController::class, 'select'])->name('eois.select');
         Route::post('/eois/{eoi}/reject', [EoiController::class, 'reject'])->name('eois.reject');
 
+        // ─── Invitation Management ───────────────────────────────────────────
+        Route::get('/invitations', [\App\Http\Controllers\Web\Admin\InvitationController::class, 'index'])->name('invitations.index');
+        Route::get('/invitations/create', [\App\Http\Controllers\Web\Admin\InvitationController::class, 'create'])->name('invitations.create');
+        Route::post('/invitations', [\App\Http\Controllers\Web\Admin\InvitationController::class, 'store'])->name('invitations.store');
+        Route::delete('/invitations/{type}/{id}', [\App\Http\Controllers\Web\Admin\InvitationController::class, 'destroy'])->name('invitations.destroy');
+
+
         // Event Engagement
         Route::prefix('events/{event}')->name('events.')->group(function () {
             // Polls

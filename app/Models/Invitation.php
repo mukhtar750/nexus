@@ -13,29 +13,45 @@ class Invitation extends Model
     protected $fillable = [
         'user_id',
         'event_id',
+        'summit_id',
         'status',
         'invited_by',
+        'token',
+        'invite_type',
+        // Delegate confirmation fields
+        'full_name',
+        'phone',
+        'email',
+        'organization',
+        'role_title',
+        'state',
+        'preferred_location',
+        'areas_of_interest',
+        'physical_attendance',
+        'how_received_invitation',
+        'confirmed_at',
     ];
 
-    /**
-     * Get the user that received the invitation.
-     */
+    protected $casts = [
+        'physical_attendance' => 'boolean',
+        'confirmed_at' => 'datetime',
+    ];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Get the event the user is invited to.
-     */
     public function event(): BelongsTo
     {
         return $this->belongsTo(Event::class);
     }
 
-    /**
-     * Get the staff member who sent the invitation.
-     */
+    public function summit(): BelongsTo
+    {
+        return $this->belongsTo(Summit::class);
+    }
+
     public function inviter(): BelongsTo
     {
         return $this->belongsTo(User::class, 'invited_by');

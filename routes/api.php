@@ -8,9 +8,18 @@ use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\InvitationController;
 use App\Http\Controllers\Api\SummitEoiController;
 
+use App\Http\Controllers\Api\InvitationConfirmationController;
+
 // Guest registration (open)
 Route::post('/auth/register/guest', [AuthController::class, 'registerGuest']);
 Route::post('/auth/login', [AuthController::class, 'login']);
+
+// ─── Invitation Confirmations (token-gated, no auth required) ─────────────
+Route::get('/invitations/validate-token', [InvitationConfirmationController::class, 'validateToken']);
+Route::post('/invitations/confirm/delegate', [InvitationConfirmationController::class, 'confirmDelegate']);
+Route::post('/invitations/confirm/speaker', [InvitationConfirmationController::class, 'confirmSpeaker']);
+
+
 
 // ─── EOI (Exporter) ────────────────────────────────────────────────────────
 // Step 1: Submit expression of interest (no account required)
@@ -65,6 +74,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/users/{user}/approve', [\App\Http\Controllers\Api\AdminController::class, 'approveUser']);
         Route::post('/users/{user}/reject', [\App\Http\Controllers\Api\AdminController::class, 'rejectUser']);
         Route::post('/events/invite', [\App\Http\Controllers\Api\AdminController::class, 'inviteUser']);
+
+        // ─── Invitation Management ──────────────────────────────────────────
+        Route::post('/invitations/create-delegate', [InvitationConfirmationController::class, 'createDelegateInvite']);
+        Route::post('/invitations/create-speaker', [InvitationConfirmationController::class, 'createSpeakerInvite']);
+
+
 
         // ─── EOI Management ─────────────────────────────────────────────
         Route::get('/eois', [SummitEoiController::class, 'index']);

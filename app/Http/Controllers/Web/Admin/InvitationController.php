@@ -68,9 +68,10 @@ class InvitationController extends Controller
 
             $message = 'Invitation generated and email sent successfully!';
         } catch (\Exception $e) {
-            // Log the error if needed, but don't crash the application
+            \Illuminate\Support\Facades\Log::error('Mail sending failed: ' . $e->getMessage());
             $message = 'Invitation generated (Token: ' . $token . '), but the email could not be sent. Please send the token manually.';
         }
+
 
         return redirect()->route('admin.invitations.index')
             ->with('success', $message);

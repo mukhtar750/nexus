@@ -78,7 +78,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Dr. Amina Mohammed',
             'title' => 'Director General, WTO',
             'bio' => 'Dr. Amina Mohammed is a renowned economist and the current Director General of the World Trade Organization.',
-            'photo_url' => 'https://ui-avatars.com/api/?name=Amina+Mohammed&background=random',
+            'avatar_url' => 'https://ui-avatars.com/api/?name=Amina+Mohammed&background=random',
         ]);
 
         Speaker::create([
@@ -86,7 +86,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'John Doe',
             'title' => 'CEO, ExportPro',
             'bio' => 'John Doe has over 20 years of experience in international trade logistics.',
-            'photo_url' => 'https://ui-avatars.com/api/?name=John+Doe&background=random',
+            'avatar_url' => 'https://ui-avatars.com/api/?name=John+Doe&background=random',
         ]);
 
         // Create sessions for event 1

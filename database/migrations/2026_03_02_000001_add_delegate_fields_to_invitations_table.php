@@ -7,17 +7,22 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::table('invitations', function (Blueprint $table) {
-            // Drop the old FK constraints first so we can restructure
-            try {
+        // Drop the old FK constraints first so we can restructure
+        try {
+            Schema::table('invitations', function (Blueprint $table) {
                 $table->dropForeign(['user_id']);
-            } catch (\Exception $e) {
-            }
+            });
+        } catch (\Exception $e) {
+        }
 
-            try {
+        try {
+            Schema::table('invitations', function (Blueprint $table) {
                 $table->dropForeign(['event_id']);
-            } catch (\Exception $e) {
-            }
+            });
+        } catch (\Exception $e) {
+        }
+
+        Schema::table('invitations', function (Blueprint $table) {
 
             // Make user_id & event_id nullable (invite comes BEFORE user account)
             $table->foreignId('user_id')->nullable()->change();

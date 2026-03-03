@@ -9,8 +9,15 @@ return new class extends Migration {
     {
         Schema::table('invitations', function (Blueprint $table) {
             // Drop the old FK constraints first so we can restructure
-            $table->dropForeign(['user_id']);
-            $table->dropForeign(['event_id']);
+            try {
+                $table->dropForeign(['user_id']);
+            } catch (\Exception $e) {
+            }
+
+            try {
+                $table->dropForeign(['event_id']);
+            } catch (\Exception $e) {
+            }
 
             // Make user_id & event_id nullable (invite comes BEFORE user account)
             $table->foreignId('user_id')->nullable()->change();

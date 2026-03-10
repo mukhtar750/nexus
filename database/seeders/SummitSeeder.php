@@ -19,7 +19,7 @@ class SummitSeeder extends Seeder
         $abujaEvent = \App\Models\Event::where('title', 'Agriculture Export Masterclass')->first();
 
         \App\Models\Summit::create([
-            'title' => 'NESS 2026 Sensitization Seminar - Lagos',
+            'title' => 'NESS 2026 SENSITISATION SEMINARS - LAGOS',
             'city' => 'Lagos',
             'zone' => 'South-West Zone',
             'date' => 'March 26, 2026',
@@ -29,7 +29,7 @@ class SummitSeeder extends Seeder
         ]);
 
         \App\Models\Summit::create([
-            'title' => 'NESS 2026 Sensitization Seminar - Kano',
+            'title' => 'NESS 2026 SENSITISATION SEMINARS - KANO',
             'city' => 'Kano',
             'zone' => 'North-West Zone',
             'date' => 'April 2, 2026',
@@ -39,7 +39,7 @@ class SummitSeeder extends Seeder
         ]);
 
         \App\Models\Summit::create([
-            'title' => 'NESS 2026 Sensitization Seminar - Port Harcourt',
+            'title' => 'NESS 2026 SENSITISATION SEMINARS - PORT HARCOURT',
             'city' => 'Port Harcourt',
             'zone' => 'South-South Zone',
             'date' => 'April 8, 2026',

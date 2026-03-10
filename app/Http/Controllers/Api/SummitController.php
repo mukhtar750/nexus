@@ -11,8 +11,11 @@ class SummitController extends Controller
     public function index()
     {
         $summits = Summit::where('is_active', true)
-            ->orderBy('created_at', 'asc')
-            ->get();
+            ->get()
+            ->sortBy(function ($summit) {
+                return strtotime($summit->date);
+            })
+            ->values();
 
         return response()->json([
             'data' => $summits

@@ -19,13 +19,13 @@ class SummitSeeder extends Seeder
         $abujaEvent = \App\Models\Event::where('title', 'Agriculture Export Masterclass')->first();
 
         \App\Models\Summit::create([
-            'title' => 'NESS 2026 Sensitization Seminar - Port Harcourt',
-            'city' => 'Port Harcourt',
-            'zone' => 'South-South Zone',
-            'date' => 'April 8, 2026',
-            'venue' => 'PTDF Centre for Skills Development and Training (CSD), Omagwa-Igwuruta Road, Port Harcourt, Rivers State',
+            'title' => 'NESS 2026 Sensitization Seminar - Lagos',
+            'city' => 'Lagos',
+            'zone' => 'South-West Zone',
+            'date' => 'March 26, 2026',
+            'venue' => 'Lagos Marriot Hotel Ikeja, 122 Joel Ogunnaike Street',
             'is_active' => true,
-            'event_id' => null,
+            'event_id' => $lagosEvent ? $lagosEvent->id : null,
         ]);
 
         \App\Models\Summit::create([
@@ -39,13 +39,13 @@ class SummitSeeder extends Seeder
         ]);
 
         \App\Models\Summit::create([
-            'title' => 'NESS 2026 Sensitization Seminar - Lagos',
-            'city' => 'Lagos',
-            'zone' => 'South-West Zone',
-            'date' => 'March 26, 2026',
-            'venue' => 'Lagos Marriot Hotel Ikeja, 122 Joel Ogunnaike Street',
+            'title' => 'NESS 2026 Sensitization Seminar - Port Harcourt',
+            'city' => 'Port Harcourt',
+            'zone' => 'South-South Zone',
+            'date' => 'April 8, 2026',
+            'venue' => 'PTDF Centre for Skills Development and Training (CSD), Omagwa-Igwuruta Road, Port Harcourt, Rivers State',
             'is_active' => true,
-            'event_id' => $lagosEvent ? $lagosEvent->id : null,
+            'event_id' => null,
         ]);
     }
 }

@@ -152,7 +152,7 @@
         <!-- Header -->
         <div class="header">
             <h1>🎉 Congratulations!</h1>
-            <p>NESS 2026 Sensitization Summit</p>
+            <p>NESS 2026 SENSITISATION SEMINARS</p>
             <span class="badge">✓ Selected</span>
         </div>
 
@@ -162,7 +162,7 @@
 
             <p class="text">
                 We are pleased to inform you that your Expression of Interest for the
-                <strong>NESS 2026 Sensitization Summit</strong> has been reviewed and
+                <strong>NESS 2026 SENSITISATION SEMINARS</strong> has been reviewed and
                 you have been <strong>selected</strong> to participate!
             </p>
 

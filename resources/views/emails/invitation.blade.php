@@ -181,7 +181,7 @@
 
                 <p>Dear <strong>{{ $name }}</strong>,</p>
 
-                <p>We are pleased to invite you to participate in the <strong>NESS 2026 Sensitization Seminars</strong>.
+                <p>We are pleased to invite you to participate in the <strong>NESS 2026 SENSITISATION SEMINARS</strong>.
                     Your expertise and participation are highly valued as we work together to advance the goals of the
                     summit.</p>
 

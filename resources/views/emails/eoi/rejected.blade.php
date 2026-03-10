@@ -119,7 +119,7 @@
         <!-- Header -->
         <div class="header">
             <h1>NESS 2026 Application Update</h1>
-            <p>Non-Oil Export Sensitization Summit</p>
+            <p>NESS 2026 SENSITISATION SEMINARS</p>
         </div>
 
         <!-- Body -->
@@ -128,7 +128,7 @@
 
             <p class="text">
                 Thank you for submitting your Expression of Interest for the
-                <strong>NESS 2026 Sensitization Summit</strong>. We truly appreciate
+                <strong>NESS 2026 SENSITISATION SEMINARS</strong>. We truly appreciate
                 your interest and the time you took to apply.
             </p>
 

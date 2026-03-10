@@ -19,12 +19,14 @@ class SummitEoiController extends Controller
     // ─────────────────────────────────────────────────────────
     public function store(Request $request, Summit $summit)
     {
+        $user = $request->user('sanctum');
+
         $validated = $request->validate([
             // Section A
-            'full_name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
-            'email' => 'required|email|max:255',
-            'business_name' => 'required|string|max:255',
+            'full_name' => $user ? 'nullable|string|max:255' : 'required|string|max:255',
+            'phone' => $user ? 'nullable|string|max:20' : 'required|string|max:20',
+            'email' => $user ? 'nullable|email|max:255' : 'required|email|max:255',
+            'business_name' => $user ? 'nullable|string|max:255' : 'required|string|max:255',
             'state' => 'required|string|max:100',
             'preferred_location' => 'required|in:port_harcourt,lagos,kano',
             'how_heard' => 'required|in:nepc,bank,industry_association,word_of_mouth,other',
@@ -45,8 +47,10 @@ class SummitEoiController extends Controller
             'seminar_goals.*' => 'string',
         ]);
 
+        $email = $user ? $user->email : $validated['email'];
+
         // Prevent duplicate EOI for same email + summit
-        $existing = SummitEoi::where('email', $validated['email'])
+        $existing = SummitEoi::where('email', $email)
             ->where('summit_id', $summit->id)
             ->first();
 
@@ -59,6 +63,11 @@ class SummitEoiController extends Controller
 
         $eoi = SummitEoi::create(array_merge($validated, [
             'summit_id' => $summit->id,
+            'email' => $email,
+            'full_name' => $user ? ($validated['full_name'] ?? $user->name) : $validated['full_name'],
+            'phone' => $user ? ($validated['phone'] ?? $user->phone) : $validated['phone'],
+            'business_name' => $user ? ($validated['business_name'] ?? $user->business_name ?? $user->company) : $validated['business_name'],
+            'registered_user_id' => $user ? $user->id : null,
             'status' => 'pending',
         ]));
 

@@ -104,4 +104,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(Ticket::class);
     }
+
+    public function invitations()
+    {
+        return $this->hasMany(Invitation::class);
+    }
+
+    public function speakerInvitations()
+    {
+        return $this->hasMany(SpeakerInvitation::class, 'registered_user_id');
+    }
 }

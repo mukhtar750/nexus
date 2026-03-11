@@ -38,8 +38,12 @@ Route::get('/summits', [\App\Http\Controllers\Api\SummitController::class, 'inde
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/user', function (Request $request) {
-        // Return user with roles loaded
-        return $request->user()->load('roles');
+        // Return user with roles and invitations loaded
+        return $request->user()->load([
+            'roles', 
+            'invitations.summit', 
+            'speakerInvitations.summit'
+        ]);
     });
     Route::post('/user/profile', [ProfileController::class, 'update']);
 

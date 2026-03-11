@@ -24,7 +24,8 @@ class InvitationConfirmationController extends Controller
         $token = $request->token;
 
         // Check delegate (invitation)
-        $invitation = Invitation::where('token', $token)
+        $invitation = Invitation::with('summit')
+            ->where('token', $token)
             ->where('invite_type', 'delegate')
             ->first();
 
@@ -36,12 +37,15 @@ class InvitationConfirmationController extends Controller
                 'type' => 'delegate',
                 'full_name' => $invitation->full_name,
                 'email' => $invitation->email,
+                'summit' => $invitation->summit,
                 'summit_id' => $invitation->summit_id,
             ]);
         }
 
         // Check speaker
-        $speaker = SpeakerInvitation::where('token', $token)->first();
+        $speaker = SpeakerInvitation::with('summit')
+            ->where('token', $token)
+            ->first();
 
         if ($speaker) {
             if ($speaker->status === 'confirmed') {
@@ -51,6 +55,7 @@ class InvitationConfirmationController extends Controller
                 'type' => 'speaker',
                 'full_name' => $speaker->full_name,
                 'email' => $speaker->email,
+                'summit' => $speaker->summit,
                 'summit_id' => $speaker->summit_id,
             ]);
         }

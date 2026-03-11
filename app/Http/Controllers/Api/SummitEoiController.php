@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\EoiSelected;
 
 class SummitEoiController extends Controller
 {
@@ -45,6 +47,23 @@ class SummitEoiController extends Controller
             'certifications.*' => 'string',
             'seminar_goals' => 'nullable|array|max:2',
             'seminar_goals.*' => 'string',
+            // Section D (Rigorous / Business Profile)
+            'business_address' => 'nullable|string|max:500',
+            'year_established' => 'nullable|string|max:4',
+            'business_structure' => 'nullable|string|max:255',
+            'cac_number' => 'nullable|string|max:50',
+            'cac_certificate' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'nepc_certificate' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'haccp_certificate' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'fda_certificate' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'halal_certificate' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'son_certificate' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'production_location' => 'nullable|string|max:255',
+            'production_compliant' => 'nullable|boolean',
+            'production_capacity' => 'nullable|string|max:255',
+            'active_channels' => 'nullable|string',
+            'sales_model' => 'nullable|string|max:255',
+            'export_objective' => 'nullable|string|max:500',
         ]);
 
         $email = $user ? $user->email : $validated['email'];
@@ -61,7 +80,19 @@ class SummitEoiController extends Controller
             ], 409);
         }
 
-        $eoi = SummitEoi::create(array_merge($validated, [
+        // Handle File Uploads
+        $fileFields = [
+            'cac_certificate', 'nepc_certificate', 'haccp_certificate',
+            'fda_certificate', 'halal_certificate', 'son_certificate'
+        ];
+        $filePaths = [];
+        foreach ($fileFields as $field) {
+            if ($request->hasFile($field)) {
+                $filePaths[$field] = $request->file($field)->store('certificates', 'public');
+            }
+        }
+
+        $eoi = SummitEoi::create(array_merge($validated, $filePaths, [
             'summit_id' => $summit->id,
             'email' => $email,
             'full_name' => $user ? ($validated['full_name'] ?? $user->name) : $validated['full_name'],
@@ -73,9 +104,32 @@ class SummitEoiController extends Controller
 
         Log::info("EOI submitted: ID {$eoi->id} for Summit {$summit->id} by {$eoi->email}");
 
+        // ── AUTO-SELECTION LOGIC ─────────────────────────────────────────────
+        if ($eoi->shouldAutoSelect()) {
+            $eoi->update([
+                'status' => 'selected',
+                'selected_at' => now(),
+                'registration_token' => Str::random(40),
+            ]);
+
+            try {
+                Mail::to($eoi->email)->send(new EoiSelected($eoi));
+                Log::info("EOI ID {$eoi->id} auto-selected and notification sent.");
+            } catch (\Exception $e) {
+                Log::error("Failed to send auto-selection email for EOI {$eoi->id}: " . $e->getMessage());
+            }
+
+            return response()->json([
+                'message' => 'Congratulations! Your profile meets our high-quality criteria and you have been automatically selected. Check your email to complete registration.',
+                'eoi_id' => $eoi->id,
+                'status' => 'selected',
+            ], 201);
+        }
+
         return response()->json([
             'message' => 'Your expression of interest has been submitted successfully! We will be in touch if you are selected.',
             'eoi_id' => $eoi->id,
+            'status' => 'pending',
         ], 201);
     }
 
@@ -87,16 +141,24 @@ class SummitEoiController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
-            'summit_id' => 'required|integer|exists:summits,id',
+            'summit_id' => 'nullable|integer|exists:summits,id',
         ]);
 
-        $eoi = SummitEoi::where('email', $request->email)
-            ->where('summit_id', $request->summit_id)
-            ->first();
+        $query = SummitEoi::where('email', $request->email);
+
+        if ($request->filled('summit_id')) {
+            $query->where('summit_id', $request->summit_id);
+        } else {
+            // Global check: prioritize selected, then pending, then rejected
+            $query->orderByRaw("FIELD(status, 'selected', 'pending', 'rejected') ASC")
+                  ->orderBy('created_at', 'desc');
+        }
+
+        $eoi = $query->first();
 
         if (!$eoi) {
             return response()->json([
-                'message' => 'No expression of interest found for this email and summit.',
+                'message' => 'No expression of interest found for this email.',
             ], 404);
         }
 
@@ -165,8 +227,35 @@ class SummitEoiController extends Controller
             'email' => $eoi->email,
             'password' => Hash::make($request->password),
             'phone' => $request->phone ?? $eoi->phone,
+            'company' => $eoi->business_name,
             'business_name' => $eoi->business_name,
+            'business_address' => $eoi->business_address,
+            'year_established' => $eoi->year_established,
+            'business_structure' => $eoi->business_structure,
+            'cac_number' => $eoi->cac_number,
+            'cac_certificate_path' => $eoi->cac_certificate,
+            'nepc_certificate_path' => $eoi->nepc_certificate,
+            'haccp_certificate_path' => $eoi->haccp_certificate,
+            'fda_certificate_path' => $eoi->fda_certificate,
+            'halal_certificate_path' => $eoi->halal_certificate,
+            'son_certificate_path' => $eoi->son_certificate,
             'product_category' => $eoi->primary_products,
+            'registered_with_cac' => $eoi->cac_registration === 'yes',
+            'exported_before' => $eoi->export_status !== 'exploring',
+            'registered_with_nepc' => $eoi->nepc_registration === 'yes',
+            'nepc_status' => $eoi->nepc_registration === 'yes' ? 'Registered' : 'Not Registered',
+            'recent_export_activity' => $eoi->export_status,
+            'commercial_scale' => $eoi->commercial_scale,
+            'packaged_for_retail' => false, // Default or add to EOI
+            'regulatory_registration' => $eoi->regulatory_registration,
+            'engaged_logistics' => false, // Add to EOI if needed
+            'received_inquiries' => false, // Add to EOI if needed
+            'production_location' => $eoi->production_location,
+            'production_compliant' => $eoi->production_compliant,
+            'production_capacity' => $eoi->production_capacity,
+            'active_channels' => $eoi->active_channels,
+            'sales_model' => $eoi->sales_model,
+            'export_objective' => $eoi->export_objective,
             'user_type' => 'exporter',
             'status' => 'pending', // Admin still does final approval
         ]);

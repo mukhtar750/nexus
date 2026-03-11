@@ -105,48 +105,128 @@
                 </div>
             </div>
 
-            {{-- Section C --}}
+            {{-- Section C (Rigorous Details) --}}
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div class="px-6 py-4 bg-gradient-to-r from-teal-600 to-teal-500">
-                    <h3 class="text-white font-bold text-sm uppercase tracking-wider">Section C — Additional Information
+                    <h3 class="text-white font-bold text-sm uppercase tracking-wider">Section C — Rigorous Business Details
                     </h3>
                 </div>
-                <div class="p-6 space-y-4">
-                    <div class="grid grid-cols-2 gap-4">
+                <div class="p-6 space-y-6">
+                    {{-- Business Basics --}}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-xs text-gray-400 uppercase tracking-wide mb-0.5">Business Address</p>
+                            <p class="text-sm font-medium text-gray-800">{{ $eoi->business_address ?: '—' }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-400 uppercase tracking-wide mb-0.5">Year Established</p>
+                            <p class="text-sm font-medium text-gray-800">{{ $eoi->year_established ?: '—' }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-400 uppercase tracking-wide mb-0.5">Business Structure</p>
+                            <p class="text-sm font-medium text-gray-800">{{ ucwords(str_replace('_', ' ', $eoi->business_structure ?? '')) ?: '—' }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-400 uppercase tracking-wide mb-0.5">CAC Number</p>
+                            <p class="text-sm font-medium text-gray-800">{{ $eoi->cac_number ?: '—' }}</p>
+                        </div>
+                    </div>
+
+                    <hr class="border-gray-100">
+
+                    {{-- Production & Compliance --}}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-xs text-gray-400 uppercase tracking-wide mb-0.5">Production Location</p>
+                            <p class="text-sm font-medium text-gray-800">{{ $eoi->production_location ?: '—' }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-400 uppercase tracking-wide mb-0.5">Production Capacity</p>
+                            <p class="text-sm font-medium text-gray-800">{{ $eoi->production_capacity ?: '—' }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-400 uppercase tracking-wide mb-0.5">Compliant with Standards</p>
+                            <span class="inline-flex items-center gap-1 text-sm font-medium {{ $eoi->production_compliant ? 'text-green-600' : 'text-gray-500' }}">
+                                <i class="fas {{ $eoi->production_compliant ? 'fa-check-circle' : 'fa-times-circle' }}"></i>
+                                {{ $eoi->production_compliant ? 'Yes' : 'No' }}
+                            </span>
+                        </div>
                         <div>
                             <p class="text-xs text-gray-400 uppercase tracking-wide mb-0.5">Commercial Scale</p>
-                            <span
-                                class="inline-flex items-center gap-1 text-sm font-medium {{ $eoi->commercial_scale ? 'text-green-600' : 'text-gray-500' }}">
+                            <span class="inline-flex items-center gap-1 text-sm font-medium {{ $eoi->commercial_scale ? 'text-green-600' : 'text-gray-500' }}">
                                 <i class="fas {{ $eoi->commercial_scale ? 'fa-check-circle' : 'fa-times-circle' }}"></i>
                                 {{ $eoi->commercial_scale ? 'Yes' : 'No' }}
                             </span>
                         </div>
-                        <div>
-                            <p class="text-xs text-gray-400 uppercase tracking-wide mb-0.5">Regulatory Registration</p>
-                            <span
-                                class="inline-flex items-center gap-1 text-sm font-medium {{ $eoi->regulatory_registration ? 'text-green-600' : 'text-gray-500' }}">
-                                <i
-                                    class="fas {{ $eoi->regulatory_registration ? 'fa-check-circle' : 'fa-times-circle' }}"></i>
-                                {{ $eoi->regulatory_registration ? 'Yes' : 'No' }}
-                            </span>
-                        </div>
                     </div>
 
-                    @if($eoi->regulatory_body)
-                        <div>
-                            <p class="text-xs text-gray-400 uppercase tracking-wide mb-0.5">Regulatory Body</p>
-                            <p class="text-sm font-medium text-gray-800">{{ $eoi->regulatory_body }}</p>
-                        </div>
-                    @endif
+                    <hr class="border-gray-100">
 
+                    {{-- Strategy --}}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-xs text-gray-400 uppercase tracking-wide mb-0.5">Active Channels</p>
+                            <p class="text-sm font-medium text-gray-800">{{ $eoi->active_channels ?: '—' }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-400 uppercase tracking-wide mb-0.5">Sales Model</p>
+                            <p class="text-sm font-medium text-gray-800">{{ ucwords(str_replace('_', ' ', $eoi->sales_model ?? '')) ?: '—' }}</p>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <p class="text-xs text-gray-400 uppercase tracking-wide mb-0.5">Export Objective</p>
+                            <p class="text-sm font-medium text-gray-800">{{ $eoi->export_objective ?: '—' }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Certificates Section (NEW) --}}
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="px-6 py-4 bg-gradient-to-r from-red-600 to-red-500">
+                    <h3 class="text-white font-bold text-sm uppercase tracking-wider">Uploaded Certificates (Verification)</h3>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        @php
+                            $certs = [
+                                'CAC Certificate' => $eoi->cac_certificate,
+                                'NEPC Certificate' => $eoi->nepc_certificate,
+                                'HACCP Certificate' => $eoi->haccp_certificate,
+                                'FDA Certificate' => $eoi->fda_certificate,
+                                'Halal Certificate' => $eoi->halal_certificate,
+                                'SON Certificate' => $eoi->son_certificate,
+                            ];
+                        @endphp
+
+                        @foreach($certs as $label => $path)
+                            <div class="p-4 border rounded-lg {{ $path ? 'border-blue-100 bg-blue-50' : 'border-gray-100 bg-gray-50 opacity-60' }}">
+                                <p class="text-xs font-bold text-gray-500 uppercase mb-2">{{ $label }}</p>
+                                @if($path)
+                                    <a href="{{ Storage::url($path) }}" target="_blank" class="inline-flex items-center gap-2 text-sm text-blue-600 font-bold hover:underline">
+                                        <i class="fas fa-file-download"></i> View Document
+                                    </a>
+                                @else
+                                    <span class="text-xs text-gray-400 italic">Not Uploaded</span>
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+
+            {{-- Experience & Goals (Merged) --}}
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="px-6 py-4 bg-gradient-to-r from-indigo-600 to-indigo-500">
+                    <h3 class="text-white font-bold text-sm uppercase tracking-wider">Experience & Goals</h3>
+                </div>
+                <div class="p-6 space-y-4">
                     {{-- Certifications --}}
                     <div>
-                        <p class="text-xs text-gray-400 uppercase tracking-wide mb-2">Certifications Held</p>
+                        <p class="text-xs text-gray-400 uppercase tracking-wide mb-2">Other Certifications Mentioned</p>
                         @if(!empty($eoi->certifications))
                             <div class="flex flex-wrap gap-2">
                                 @foreach($eoi->certifications as $cert)
-                                    <span
-                                        class="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium border border-blue-100">
+                                    <span class="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium border border-blue-100">
                                         {{ $cert }}
                                     </span>
                                 @endforeach
@@ -162,8 +242,7 @@
                         @if(!empty($eoi->seminar_goals))
                             <div class="flex flex-wrap gap-2">
                                 @foreach($eoi->seminar_goals as $goal)
-                                    <span
-                                        class="px-2.5 py-1 bg-purple-50 text-purple-700 rounded-full text-xs font-medium border border-purple-100">
+                                    <span class="px-2.5 py-1 bg-purple-50 text-purple-700 rounded-full text-xs font-medium border border-purple-100">
                                         {{ $goal }}
                                     </span>
                                 @endforeach

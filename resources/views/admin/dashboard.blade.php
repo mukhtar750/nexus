@@ -181,25 +181,29 @@
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-4 gap-0 border-b border-gray-100">
                 <div class="p-4 text-center border-r border-gray-100">
-                    <p class="text-2xl font-bold text-gray-800">{{ \App\Models\CommunityPost::count() }}</p>
+                    @php $postCount = \Illuminate\Support\Facades\Schema::hasTable('community_posts') ? \App\Models\CommunityPost::count() : 0; @endphp
+                    <p class="text-2xl font-bold text-gray-800">{{ $postCount }}</p>
                     <p class="text-xs text-gray-500 mt-0.5">Total Posts</p>
                 </div>
                 <div class="p-4 text-center border-r border-gray-100">
-                    <p class="text-2xl font-bold text-purple-600">{{ \App\Models\CommunityPost::where('type', 'poll')->count() }}</p>
+                    @php $pollCount = \Illuminate\Support\Facades\Schema::hasTable('community_posts') ? \App\Models\CommunityPost::where('type', 'poll')->count() : 0; @endphp
+                    <p class="text-2xl font-bold text-purple-600">{{ $pollCount }}</p>
                     <p class="text-xs text-gray-500 mt-0.5">Polls</p>
                 </div>
                 <div class="p-4 text-center border-r border-gray-100">
-                    <p class="text-2xl font-bold text-blue-600">{{ \App\Models\CommunityComment::count() }}</p>
+                    @php $commentCount = \Illuminate\Support\Facades\Schema::hasTable('community_comments') ? \App\Models\CommunityComment::count() : 0; @endphp
+                    <p class="text-2xl font-bold text-blue-600">{{ $commentCount }}</p>
                     <p class="text-xs text-gray-500 mt-0.5">Comments</p>
                 </div>
                 <div class="p-4 text-center">
-                    @php $reportedPosts = \App\Models\CommunityPost::where('reports_count', '>', 0)->count(); @endphp
+                    @php $reportedPosts = \Illuminate\Support\Facades\Schema::hasTable('community_posts') ? \App\Models\CommunityPost::where('reports_count', '>', 0)->count() : 0; @endphp
                     <p class="text-2xl font-bold {{ $reportedPosts > 0 ? 'text-red-600' : 'text-green-600' }}">{{ $reportedPosts }}</p>
                     <p class="text-xs text-gray-500 mt-0.5">Reported</p>
                 </div>
             </div>
             <div class="divide-y divide-gray-100">
-                @forelse(\App\Models\CommunityPost::with('user')->latest()->take(5)->get() as $post)
+                @php $recentPosts = \Illuminate\Support\Facades\Schema::hasTable('community_posts') ? \App\Models\CommunityPost::with('user')->latest()->take(5)->get() : []; @endphp
+                @forelse($recentPosts as $post)
                     <a href="{{ route('admin.community.show', $post) }}"
                         class="p-4 hover:bg-gray-50/80 transition-colors flex items-start gap-3 group">
                         <div class="flex-shrink-0 h-9 w-9 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-xs shadow-sm">

@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\SummitEoiController;
 use App\Http\Controllers\Api\InvitationConfirmationController;
 
 // Guest registration (open)
+Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/register/guest', [AuthController::class, 'registerGuest']);
 Route::post('/auth/login', [AuthController::class, 'login']);
 
@@ -18,6 +19,7 @@ Route::post('/auth/login', [AuthController::class, 'login']);
 Route::get('/invitations/validate-token', [InvitationConfirmationController::class, 'validateToken']);
 Route::post('/invitations/confirm/delegate', [InvitationConfirmationController::class, 'confirmDelegate']);
 Route::post('/invitations/confirm/speaker', [InvitationConfirmationController::class, 'confirmSpeaker']);
+Route::post('/invitations/public-confirm', [InvitationConfirmationController::class, 'publicConfirmation']);
 
 
 
@@ -35,6 +37,7 @@ Route::get('/events/{id}', [EventController::class, 'show']);
 
 // Public summits list
 Route::get('/summits', [\App\Http\Controllers\Api\SummitController::class, 'index']);
+Route::get('/summits/{summit}', [\App\Http\Controllers\Api\SummitController::class, 'show']);
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/user', function (Request $request) {
@@ -91,6 +94,29 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/eois/{eoi}/select', [SummitEoiController::class, 'select']);
         Route::post('/eois/{eoi}/reject', [SummitEoiController::class, 'reject']);
     });
+
+    // Community Routes
+    Route::get('/community/posts', [\App\Http\Controllers\Api\CommunityController::class, 'index']);
+    Route::post('/community/posts', [\App\Http\Controllers\Api\CommunityController::class, 'store']);
+    Route::get('/community/posts/{post}', [\App\Http\Controllers\Api\CommunityController::class, 'show']);
+    Route::delete('/community/posts/{post}', [\App\Http\Controllers\Api\CommunityController::class, 'destroy']);
+    Route::post('/community/posts/{post}/like', [\App\Http\Controllers\Api\CommunityController::class, 'like']);
+    Route::post('/community/posts/{post}/vote', [\App\Http\Controllers\Api\CommunityController::class, 'vote']);
+    Route::post('/community/posts/{post}/pin', [\App\Http\Controllers\Api\CommunityController::class, 'pin']);
+    Route::post('/community/report/{type}/{id}', [\App\Http\Controllers\Api\CommunityController::class, 'report']);
+    
+    Route::get('/community/posts/{post}/comments', [\App\Http\Controllers\Api\CommunityController::class, 'comments']);
+    Route::post('/community/posts/{post}/comments', [\App\Http\Controllers\Api\CommunityController::class, 'storeComment']);
+    Route::delete('/community/comments/{comment}', [\App\Http\Controllers\Api\CommunityController::class, 'destroyComment']);
+
+    // Certificates Routes
+    Route::get('/certificates', [\App\Http\Controllers\Api\CertificateController::class, 'index']);
+    Route::post('/certificates', [\App\Http\Controllers\Api\CertificateController::class, 'store']);
+
+    // Notifications Routes
+    Route::get('/notifications', [\App\Http\Controllers\Api\NotificationController::class, 'index']);
+    Route::post('/notifications/{id}/read', [\App\Http\Controllers\Api\NotificationController::class, 'read']);
+    Route::post('/notifications/read-all', [\App\Http\Controllers\Api\NotificationController::class, 'readAll']);
 
     // Events Routes
     Route::get('/events', [EventController::class, 'index']);

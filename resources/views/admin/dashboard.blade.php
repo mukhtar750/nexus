@@ -168,4 +168,72 @@
             </div>
         </div>
     </div>
+
+    {{-- Community Activity --}}
+    <div class="mt-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                <h3 class="text-lg font-semibold text-gray-800">
+                    <i class="fas fa-comments text-blue-500 mr-2"></i>Community Activity
+                </h3>
+                <a href="{{ route('admin.community.index') }}"
+                    class="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors">Manage All</a>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-0 border-b border-gray-100">
+                <div class="p-4 text-center border-r border-gray-100">
+                    <p class="text-2xl font-bold text-gray-800">{{ \App\Models\CommunityPost::count() }}</p>
+                    <p class="text-xs text-gray-500 mt-0.5">Total Posts</p>
+                </div>
+                <div class="p-4 text-center border-r border-gray-100">
+                    <p class="text-2xl font-bold text-purple-600">{{ \App\Models\CommunityPost::where('type', 'poll')->count() }}</p>
+                    <p class="text-xs text-gray-500 mt-0.5">Polls</p>
+                </div>
+                <div class="p-4 text-center border-r border-gray-100">
+                    <p class="text-2xl font-bold text-blue-600">{{ \App\Models\CommunityComment::count() }}</p>
+                    <p class="text-xs text-gray-500 mt-0.5">Comments</p>
+                </div>
+                <div class="p-4 text-center">
+                    @php $reportedPosts = \App\Models\CommunityPost::where('reports_count', '>', 0)->count(); @endphp
+                    <p class="text-2xl font-bold {{ $reportedPosts > 0 ? 'text-red-600' : 'text-green-600' }}">{{ $reportedPosts }}</p>
+                    <p class="text-xs text-gray-500 mt-0.5">Reported</p>
+                </div>
+            </div>
+            <div class="divide-y divide-gray-100">
+                @forelse(\App\Models\CommunityPost::with('user')->latest()->take(5)->get() as $post)
+                    <a href="{{ route('admin.community.show', $post) }}"
+                        class="p-4 hover:bg-gray-50/80 transition-colors flex items-start gap-3 group">
+                        <div class="flex-shrink-0 h-9 w-9 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-xs shadow-sm">
+                            {{ substr($post->user->name ?? '?', 0, 1) }}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                                @if($post->is_pinned)
+                                    <i class="fas fa-thumbtack text-amber-500 text-xs"></i>
+                                @endif
+                                <h4 class="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors truncate">{{ $post->title }}</h4>
+                                @if($post->type === 'poll')
+                                    <span class="flex-shrink-0 px-1.5 py-0.5 text-[10px] font-semibold rounded bg-purple-50 text-purple-600">POLL</span>
+                                @endif
+                                @if($post->reports_count > 0)
+                                    <span class="flex-shrink-0 px-1.5 py-0.5 text-[10px] font-semibold rounded bg-red-50 text-red-600">
+                                        <i class="fas fa-flag mr-0.5"></i>{{ $post->reports_count }}
+                                    </span>
+                                @endif
+                            </div>
+                            <p class="text-xs text-gray-500 mt-0.5">
+                                {{ $post->user->name ?? 'Unknown' }} · {{ $post->created_at->diffForHumans() }}
+                                · <i class="far fa-heart text-red-300"></i> {{ $post->likes_count }}
+                                · <i class="far fa-comment text-blue-300"></i> {{ $post->comments_count }}
+                            </p>
+                        </div>
+                        <div class="self-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <i class="fas fa-chevron-right text-gray-400 text-xs"></i>
+                        </div>
+                    </a>
+                @empty
+                    <div class="p-6 text-center text-gray-400 text-sm">No community posts yet</div>
+                @endforelse
+            </div>
+        </div>
+    </div>
 @endsection

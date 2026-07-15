@@ -80,108 +80,115 @@
 
 {{-- Table --}}
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-    <table class="min-w-full divide-y divide-gray-100">
-        <thead class="bg-gray-50">
-            <tr>
-                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Applicant</th>
-                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Business</th>
-                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Summit</th>
-                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Export Status</th>
-                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
-            </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-100">
-            @forelse($eois as $eoi)
-                <tr class="hover:bg-gray-50/80 transition-colors">
-                    <td class="px-6 py-4">
-                        <div class="flex items-center gap-3">
-                            <div class="flex-shrink-0 h-9 w-9 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm">
-                                {{ substr($eoi->full_name, 0, 1) }}
-                            </div>
-                            <div>
-                                <a href="{{ route('admin.eois.show', $eoi->id) }}"
-                                   class="text-sm font-semibold text-blue-600 hover:text-blue-800">{{ $eoi->full_name }}</a>
-                                <div class="text-xs text-gray-500">{{ $eoi->email }}</div>
-                                <div class="text-xs text-gray-400">{{ $eoi->phone }}</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="text-sm font-medium text-gray-800">{{ $eoi->business_name }}</div>
-                        <div class="text-xs text-gray-500">{{ $eoi->sector ? ucfirst(str_replace('_', ' ', $eoi->sector)) : '—' }}</div>
-                        <div class="text-xs text-gray-400">{{ $eoi->state }}</div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="text-sm text-gray-700">{{ $eoi->summit->city ?? '—' }}</div>
-                        <div class="text-xs text-gray-400">{{ $eoi->preferred_location ? ucfirst(str_replace('_', ' ', $eoi->preferred_location)) : '' }}</div>
-                    </td>
-                    <td class="px-6 py-4">
-                        @php
-                            $expMap = [
-                                'currently_exporting' => ['Currently Exporting', 'bg-green-100 text-green-700'],
-                                'exported_before'     => ['Exported Before', 'bg-blue-100 text-blue-700'],
-                                'export_ready'        => ['Export Ready', 'bg-purple-100 text-purple-700'],
-                                'exploring'           => ['Exploring', 'bg-gray-100 text-gray-600'],
-                            ];
-                            $exp = $expMap[$eoi->export_status] ?? ['Unknown', 'bg-gray-100 text-gray-600'];
-                        @endphp
-                        <span class="px-2 py-0.5 rounded-full text-xs font-medium {{ $exp[1] }}">{{ $exp[0] }}</span>
-                        <div class="text-xs text-gray-400 mt-1">{{ str_replace('_', ' ', $eoi->recent_export_value ?? '') }}</div>
-                    </td>
-                    <td class="px-6 py-4">
-                        @php
-                            $statusMap = [
-                                'pending'  => 'bg-amber-100 text-amber-700',
-                                'selected' => 'bg-green-100 text-green-700',
-                                'rejected' => 'bg-red-100 text-red-700',
-                            ];
-                        @endphp
-                        <span class="px-2.5 py-1 rounded-full text-xs font-semibold {{ $statusMap[$eoi->status] ?? 'bg-gray-100 text-gray-600' }}">
-                            {{ ucfirst($eoi->status) }}
-                        </span>
-                        @if($eoi->status === 'selected' && !$eoi->registered_user_id)
-                            <div class="text-xs text-amber-600 mt-1">⏳ Awaiting registration</div>
-                        @elseif($eoi->registered_user_id)
-                            <div class="text-xs text-green-600 mt-1">✅ Registered</div>
-                        @endif
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="flex items-center gap-2">
-                            <a href="{{ route('admin.eois.show', $eoi->id) }}"
-                               class="text-blue-600 hover:text-blue-800 text-xs font-medium">View</a>
-
-                            @if($eoi->status === 'pending')
-                                <form action="{{ route('admin.eois.select', $eoi->id) }}" method="POST" class="inline">
-                                    @csrf
-                                    <button type="submit"
-                                        class="text-green-600 hover:text-green-800 text-xs font-medium"
-                                        onclick="return confirm('Select {{ $eoi->full_name }} for NESS 2026?')">
-                                        Select
-                                    </button>
-                                </form>
-
-                                <button onclick="openRejectModal({{ $eoi->id }}, '{{ addslashes($eoi->full_name) }}')"
-                                    class="text-red-600 hover:text-red-800 text-xs font-medium">
-                                    Reject
-                                </button>
-                            @endif
-                        </div>
-                    </td>
-                </tr>
-            @empty
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-100">
+            <thead class="bg-gray-50">
                 <tr>
-                    <td colspan="6" class="px-6 py-12 text-center text-gray-400">
-                        <i class="fas fa-inbox text-4xl mb-3 block"></i>
-                        No expressions of interest found.
-                    </td>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Applicant</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Business</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Summit</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Export Status</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Actions</th>
                 </tr>
-            @endforelse
-        </tbody>
-    </table>
-    <div class="px-6 py-4 border-t border-gray-100">
-        {{ $eois->links() }}
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-100">
+                @forelse($eois as $eoi)
+                    <tr class="hover:bg-gray-50/80 transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center gap-3">
+                                <div class="flex-shrink-0 h-9 w-9 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-sm">
+                                    {{ substr($eoi->full_name, 0, 1) }}
+                                </div>
+                                <div class="min-w-0">
+                                    <a href="{{ route('admin.eois.show', $eoi->id) }}"
+                                       class="text-sm font-bold text-blue-600 hover:text-blue-800 transition-colors block">{{ $eoi->full_name }}</a>
+                                    <div class="text-[10px] text-gray-400 mt-0.5">{{ $eoi->email }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-bold text-gray-800 truncate max-w-[180px]">{{ $eoi->business_name }}</div>
+                            <div class="text-[10px] text-gray-500 font-medium">{{ $eoi->sector ? strtoupper(str_replace('_', ' ', $eoi->sector)) : '—' }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-700">{{ $eoi->summit->city ?? '—' }}</div>
+                            <div class="text-[10px] text-gray-400 mt-0.5">{{ $eoi->preferred_location ? strtoupper(str_replace('_', ' ', $eoi->preferred_location)) : '' }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            @php
+                                $expMap = [
+                                    'currently_exporting' => ['CURRENTLY EXPORTING', 'bg-green-50 text-green-700 border-green-100'],
+                                    'exported_before'     => ['EXPORTED BEFORE', 'bg-blue-50 text-blue-700 border-blue-100'],
+                                    'export_ready'        => ['EXPORT READY', 'bg-purple-50 text-purple-700 border-purple-100'],
+                                    'exploring'           => ['EXPLORING', 'bg-gray-50 text-gray-600 border-gray-100'],
+                                ];
+                                $exp = $expMap[$eoi->export_status] ?? ['UNKNOWN', 'bg-gray-50 text-gray-600 border-gray-100'];
+                            @endphp
+                            <span class="px-2 py-0.5 rounded-md text-[9px] font-bold border {{ $exp[1] }}">{{ $exp[0] }}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            @php
+                                $statusClasses = [
+                                    'pending'  => 'bg-amber-100 text-amber-700',
+                                    'selected' => 'bg-green-100 text-green-700',
+                                    'rejected' => 'bg-red-100 text-red-700',
+                                ];
+                            @endphp
+                            <span class="px-2 py-1 rounded-full text-[10px] font-bold {{ $statusClasses[$eoi->status] ?? 'bg-gray-100 text-gray-600' }}">
+                                {{ strtoupper($eoi->status) }}
+                            </span>
+                            @if($eoi->status === 'selected' && !$eoi->registered_user_id)
+                                <div class="text-[9px] text-amber-600 font-medium mt-1 uppercase tracking-tighter italic">Awaiting Reg</div>
+                            @elseif($eoi->registered_user_id)
+                                <div class="text-[9px] text-green-600 font-medium mt-1 uppercase tracking-tighter">Registered</div>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
+                            <div class="flex items-center justify-end gap-2">
+                                <a href="{{ route('admin.eois.show', $eoi->id) }}"
+                                   class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="View Details">
+                                    <i class="fas fa-eye text-sm"></i>
+                                </a>
+
+                                @if($eoi->status === 'pending')
+                                    <form action="{{ route('admin.eois.select', $eoi->id) }}" method="POST" class="inline">
+                                        @csrf
+                                        <button type="submit"
+                                            class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                                            onclick="return confirm('Select {{ $eoi->full_name }} for NESS 2026?')" title="Select">
+                                            <i class="fas fa-check text-sm"></i>
+                                        </button>
+                                    </form>
+
+                                    <button onclick="openRejectModal({{ $eoi->id }}, '{{ addslashes($eoi->full_name) }}')"
+                                        class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Reject">
+                                        <i class="fas fa-times text-sm"></i>
+                                    </button>
+                                @endif
+                            </div>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="6" class="px-6 py-12 text-center text-gray-400">
+                            <div class="flex flex-col items-center">
+                                <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                                    <i class="fas fa-inbox text-2xl text-gray-300"></i>
+                                </div>
+                                <p class="text-sm font-medium">No expressions of interest found.</p>
+                            </div>
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
+    @if($eois->hasPages())
+        <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/30">
+            {{ $eois->links() }}
+        </div>
+    @endif
 </div>
 
 {{-- Reject Modal --}}

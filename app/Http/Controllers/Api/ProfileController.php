@@ -13,6 +13,7 @@ class ProfileController extends Controller
 
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
+            'email' => 'sometimes|email|unique:users,email,' . $user->id,
             'phone' => 'sometimes|string|max:20',
             'company' => 'sometimes|string|max:255',
             'bio' => 'sometimes|string|max:1000',
@@ -26,7 +27,7 @@ class ProfileController extends Controller
         }
 
         // Update other fields
-        $user->update($request->only(['name', 'phone', 'company', 'bio']));
+        $user->update($request->only(['name', 'email', 'phone', 'company', 'bio']));
         $user->save();
 
         return response()->json([

@@ -57,7 +57,7 @@ class AuthController extends Controller
             'email' => $validated['email'],
             'password' => bcrypt($validated['password']),
             'phone' => $validated['phone'] ?? null,
-            'business_name' => $validated['business_name'],
+            'business_name' => $validated['business_name'] ?? null,
             'business_address' => $validated['business_address'] ?? null,
             'year_established' => $validated['year_established'] ?? null,
             'business_structure' => $validated['business_structure'] ?? null,

@@ -14,6 +14,7 @@ class Event extends Model
         'location',
         'cover_image_url', // raw DB path
         'requires_invitation',
+        'category',
     ];
 
     protected $casts = [
@@ -23,7 +24,16 @@ class Event extends Model
     ];
 
     // Always include computed attributes in JSON
-    protected $appends = ['cover_image_url_full'];
+    protected $appends = ['cover_image_url_full', 'is_eoi_open'];
+
+    public function getIsEoiOpenAttribute()
+    {
+        if ($this->category === 'summit') {
+            $summit = Summit::where('event_id', $this->id)->first();
+            return $summit ? $summit->is_eoi_open : false;
+        }
+        return true; // Default to open for non-summit events
+    }
 
     /**
      * Returns a full URL to the cover image for API/Flutter consumption.

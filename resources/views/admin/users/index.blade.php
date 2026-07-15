@@ -13,80 +13,96 @@
         </form>
     </div>
 
-    <div class="bg-white rounded-lg shadow-md overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                @foreach($users as $user)
-                        <tr class="hover:bg-gray-50">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">User</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Role</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-100">
+                    @foreach($users as $user)
+                        <tr class="hover:bg-gray-50/50 transition-colors">
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
+                                <div class="flex items-center min-w-[200px]">
                                     <div
-                                        class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold">
+                                        class="flex-shrink-0 h-10 w-10 rounded-full bg-gradient-to-tr from-gray-100 to-gray-200 flex items-center justify-center text-gray-600 font-bold text-sm shadow-sm border border-gray-200">
                                         {{ substr($user->name, 0, 1) }}
                                     </div>
                                     <div class="ml-4">
                                         <a href="{{ route('admin.users.show', $user->id) }}"
-                                            class="text-sm font-medium text-blue-600 hover:text-blue-900 border-b border-transparent hover:border-blue-900">{{ $user->name }}</a>
-                                        <div class="text-sm text-gray-500">{{ $user->email }}</div>
+                                            class="text-sm font-bold text-blue-600 hover:text-blue-800 transition-colors">{{ $user->name }}</a>
+                                        <div class="text-[11px] text-gray-500">{{ $user->email }}</div>
                                     </div>
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                @foreach($user->roles as $role)
-                                            <span
-                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                                                                {{ $role->name === 'admin' ? 'bg-red-100 text-red-800' :
-                                    ($role->name === 'staff' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800') }}">
-                                                {{ ucfirst($role->name) }}
-                                            </span>
-                                @endforeach
+                                <div class="flex flex-wrap gap-1">
+                                    @foreach($user->roles as $role)
+                                        <span
+                                            class="px-2 py-0.5 text-[10px] font-bold rounded-md
+                                            {{ $role->name === 'admin' ? 'bg-red-50 text-red-700 border border-red-100' :
+                                                ($role->name === 'staff' ? 'bg-blue-50 text-blue-700 border border-blue-100' : 'bg-gray-50 text-gray-700 border border-gray-100') }}">
+                                            {{ strtoupper($role->name) }}
+                                        </span>
+                                    @endforeach
+                                </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                                    {{ $user->status === 'approved' ? 'bg-green-100 text-green-800' :
-                    ($user->status === 'rejected' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800') }}">
-                                    {{ ucfirst($user->status ?? 'Pending') }}
+                                <span class="px-2 py-1 text-[10px] font-bold rounded-full 
+                                    {{ $user->status === 'approved' ? 'bg-green-100 text-green-700' :
+                                        ($user->status === 'rejected' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700') }}">
+                                    {{ strtoupper($user->status ?? 'PENDING') }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium flex gap-3">
-                                <a href="{{ route('admin.users.show', $user->id) }}"
-                                    class="text-blue-600 hover:text-blue-900">View</a>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <div class="flex justify-end items-center gap-2">
+                                    <a href="{{ route('admin.users.show', $user->id) }}"
+                                        class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="View Profile">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
 
-                                <button onclick="openRoleModal(this.dataset.userId, JSON.parse(this.dataset.roles))"
-                                    data-user-id="{{ $user->id }}" data-roles="{{ json_encode($user->roles->pluck('id')) }}"
-                                    class="text-indigo-600 hover:text-indigo-900">Edit Role</button>
+                                    <button onclick="openRoleModal(this.dataset.userId, JSON.parse(this.dataset.roles))"
+                                        data-user-id="{{ $user->id }}" data-roles="{{ json_encode($user->roles->pluck('id')) }}"
+                                        class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors" title="Edit Roles">
+                                        <i class="fas fa-user-tag"></i>
+                                    </button>
 
-                                @if($user->status !== 'approved')
-                                    <form action="{{ route('admin.users.approve', $user->id) }}" method="POST" class="inline">
-                                        @csrf
-                                        <button type="submit" class="text-green-600 hover:text-green-900"
-                                            onclick="return confirm('Approve this user?')">Approve</button>
-                                    </form>
-                                @endif
+                                    @if($user->status !== 'approved')
+                                        <form action="{{ route('admin.users.approve', $user->id) }}" method="POST" class="inline">
+                                            @csrf
+                                            <button type="submit" class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                                                onclick="return confirm('Approve this user?')" title="Approve">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                        </form>
+                                    @endif
 
-                                @if($user->status !== 'rejected')
-                                    <form action="{{ route('admin.users.reject', $user->id) }}" method="POST" class="inline">
-                                        @csrf
-                                        <button type="submit" class="text-red-600 hover:text-red-900"
-                                            onclick="return confirm('Reject this user?')">Reject</button>
-                                    </form>
-                                @endif
+                                    @if($user->status !== 'rejected')
+                                        <form action="{{ route('admin.users.reject', $user->id) }}" method="POST" class="inline">
+                                            @csrf
+                                            <button type="submit" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                onclick="return confirm('Reject this user?')" title="Reject">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </form>
+                                    @endif
+                                </div>
                             </td>
                         </tr>
-                @endforeach
-            </tbody>
-        </table>
-        <div class="px-6 py-4 border-t border-gray-200">
-            {{ $users->links() }}
+                    @endforeach
+                </tbody>
+            </table>
         </div>
+        @if($users->hasPages())
+            <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/50">
+                {{ $users->links() }}
+            </div>
+        @endif
     </div>
 
     <!-- Role Modal -->

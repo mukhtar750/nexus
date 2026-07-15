@@ -26,7 +26,7 @@ class RegisterRequest extends FormRequest
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
             'phone' => 'nullable|string|max:20',
-            'business_name' => 'required|string|max:255',
+            'business_name' => 'nullable|string|max:255',
             'business_address' => 'nullable|string',
             'year_established' => 'nullable|string',
             'business_structure' => 'nullable|string',

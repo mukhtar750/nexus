@@ -21,4 +21,11 @@ class SummitController extends Controller
             'data' => $summits
         ]);
     }
+
+    public function show(Summit $summit)
+    {
+        return response()->json([
+            'data' => $summit
+        ]);
+    }
 }

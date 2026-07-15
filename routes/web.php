@@ -8,7 +8,7 @@ use App\Http\Controllers\Web\Admin\AttendeeController;
 use App\Http\Controllers\Web\Admin\SpeakerController;
 use App\Http\Controllers\Web\Admin\SessionController;
 use App\Http\Controllers\Web\Admin\EoiController;
-
+use App\Http\Controllers\Web\Admin\CommunityController as AdminCommunityController;
 
 
 Route::get('/', function () {
@@ -66,6 +66,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/invitations', [\App\Http\Controllers\Web\Admin\InvitationController::class, 'store'])->name('invitations.store');
         Route::delete('/invitations/{type}/{id}', [\App\Http\Controllers\Web\Admin\InvitationController::class, 'destroy'])->name('invitations.destroy');
 
+
+        // ─── Community Management ─────────────────────────────────────────────
+        Route::get('/community', [AdminCommunityController::class, 'index'])->name('community.index');
+        Route::get('/community/{post}', [AdminCommunityController::class, 'show'])->name('community.show');
+        Route::post('/community/{post}/pin', [AdminCommunityController::class, 'pin'])->name('community.pin');
+        Route::delete('/community/{post}', [AdminCommunityController::class, 'destroy'])->name('community.destroy');
+        Route::delete('/community/comments/{comment}', [AdminCommunityController::class, 'destroyComment'])->name('community.comments.destroy');
 
         // Event Engagement
         Route::prefix('events/{event}')->name('events.')->group(function () {

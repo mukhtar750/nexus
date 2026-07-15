@@ -71,12 +71,24 @@
                         @enderror
                     </div>
 
-                    <div>
-                        <label class="flex items-center gap-3">
-                            <input type="checkbox" name="is_active" value="1" {{ old('is_active', $summit->is_active ?? true) ? 'checked' : '' }}
-                                class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                            <span class="text-sm font-medium text-gray-700">Active (Show on mobile app)</span>
-                        </label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 p-4 rounded-xl border border-gray-100 mt-4">
+                        <div>
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <input type="checkbox" name="is_active" value="1" {{ old('is_active', $summit->is_active ?? true) ? 'checked' : '' }}
+                                    class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 transition-all cursor-pointer">
+                                <span class="text-sm font-semibold text-gray-700 group-hover:text-blue-600 transition-colors">Active Summit</span>
+                            </label>
+                            <p class="text-[11px] text-gray-500 mt-1 ml-8">If disabled, this summit won't appear on the mobile app list.</p>
+                        </div>
+
+                        <div>
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <input type="checkbox" name="hasHighlights" value="1" {{ old('hasHighlights', $summit->hasHighlights ?? false) ? 'checked' : '' }}
+                                    class="w-5 h-5 text-amber-600 border-gray-300 rounded focus:ring-amber-500 transition-all cursor-pointer">
+                                <span class="text-sm font-semibold text-gray-700 group-hover:text-amber-600 transition-colors">Show Highlights</span>
+                            </label>
+                            <p class="text-[11px] text-gray-500 mt-1 ml-8">When enabled, the mobile app will show event highlights instead of registration form.</p>
+                        </div>
                     </div>
                 </div>
 

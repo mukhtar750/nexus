@@ -69,6 +69,50 @@ class InvitationConfirmationController extends Controller
      * Submit delegate confirmation form and create account.
      * POST /api/invitations/confirm/delegate
      */
+    /**
+     * Public confirmation (No token required).
+     * POST /api/invitations/public-confirm
+     */
+    public function publicConfirmation(Request $request)
+    {
+        $validated = $request->validate([
+            'full_name' => 'required|string|max:255',
+            'phone' => 'required|string|max:30',
+            'email' => 'required|email|max:255|unique:users,email',
+            'organization' => 'required|string|max:255',
+            'position' => 'required|string|max:255',
+            'city_residence' => 'required|string|max:100',
+            'event_location' => 'required|string|max:255',
+            'areas_of_benefit' => 'nullable|array',
+            'confirm_in_person' => 'required|boolean',
+            'how_received_invitation' => 'required|string|max:500',
+            'password' => 'required|string|min:8',
+            'user_type' => 'required|in:delegate,speaker',
+        ]);
+
+        // Create user account
+        $user = User::create([
+            'name' => $validated['full_name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'phone' => $validated['phone'],
+            'user_type' => $validated['user_type'],
+            'status' => 'approved', 
+            'business_name' => $validated['organization'],
+        ]);
+
+        // Log the confirmation details (optional: could save to a separate confirmations table)
+        // For now, we link it to the user's profile or just rely on the user record.
+
+        $token = $user->createToken('myapptoken')->plainTextToken;
+
+        return response()->json([
+            'message' => 'Confirmation successful! Welcome to NESS 2026.',
+            'user' => $user,
+            'token' => $token,
+        ], 201);
+    }
+
     public function confirmDelegate(Request $request)
     {
         $validated = $request->validate([

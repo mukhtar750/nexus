@@ -28,9 +28,11 @@ class SummitController extends Controller
             'date' => 'required|string|max:255',
             'venue' => 'required|string|max:255',
             'is_active' => 'nullable|boolean',
+            'hasHighlights' => 'nullable|boolean',
         ]);
 
         $validated['is_active'] = $request->has('is_active');
+        $validated['hasHighlights'] = $request->has('hasHighlights');
 
         Summit::create($validated);
 
@@ -52,9 +54,11 @@ class SummitController extends Controller
             'date' => 'required|string|max:255',
             'venue' => 'required|string|max:255',
             'is_active' => 'nullable|boolean',
+            'hasHighlights' => 'nullable|boolean',
         ]);
 
         $validated['is_active'] = $request->has('is_active');
+        $validated['hasHighlights'] = $request->has('hasHighlights');
 
         $summit->update($validated);
 

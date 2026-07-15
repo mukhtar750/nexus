@@ -17,10 +17,16 @@ class Summit extends Model
         'date',
         'venue',
         'is_active',
+        'hasHighlights',
+        'highlights_data',
+        'is_eoi_open',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'hasHighlights' => 'boolean',
+        'highlights_data' => 'array',
+        'is_eoi_open' => 'boolean',
     ];
 
     public function event()

@@ -105,7 +105,7 @@
                     class="fas fa-comments w-5 h-5 mr-3 {{ request()->routeIs('admin.community.*') ? 'text-white' : 'text-gray-500 group-hover:text-white' }} transition-colors"></i>
                 Posts & Discussions
                 @php
-                    $reportedPostsCount = \App\Models\CommunityPost::where('reports_count', '>', 0)->count();
+                    $reportedPostsCount = \Illuminate\Support\Facades\Schema::hasTable('community_posts') ? \App\Models\CommunityPost::where('reports_count', '>', 0)->count() : 0;
                 @endphp
                 @if($reportedPostsCount > 0)
                     <span class="ml-auto bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">

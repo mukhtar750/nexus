@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OtpMail;
 
 use App\Http\Requests\Api\RegisterRequest;
 use App\Http\Requests\Api\LoginRequest;
@@ -171,5 +174,46 @@ class AuthController extends Controller
         return [
             'message' => 'Logged out'
         ];
+    }
+
+    public function forgotPassword(Request $request)
+    {
+        $request->validate(['email' => 'required|email|exists:users,email']);
+        
+        $otp = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
+        
+        // Store OTP in cache for 15 minutes (900 seconds)
+        Cache::put('otp_' . $request->email, $otp, 900);
+        
+        try {
+            Mail::to($request->email)->send(new OtpMail($otp));
+            return response()->json(['message' => 'OTP sent to your email address']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to send OTP email', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'otp' => 'required|string|size:6',
+            'password' => 'required|string|min:6|confirmed'
+        ]);
+
+        $cachedOtp = Cache::get('otp_' . $request->email);
+
+        if (!$cachedOtp || $cachedOtp !== $request->otp) {
+            return response()->json(['message' => 'Invalid or expired OTP'], 400);
+        }
+
+        $user = User::where('email', $request->email)->first();
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        // Clear OTP
+        Cache::forget('otp_' . $request->email);
+
+        return response()->json(['message' => 'Password reset successfully']);
     }
 }

@@ -14,6 +14,8 @@ use App\Http\Controllers\Api\InvitationConfirmationController;
 Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/register/guest', [AuthController::class, 'registerGuest']);
 Route::post('/auth/login', [AuthController::class, 'login']);
+Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword']);
+Route::post('/auth/reset-password', [AuthController::class, 'resetPassword']);
 
 // ─── Invitation Confirmations (token-gated, no auth required) ─────────────
 Route::get('/invitations/validate-token', [InvitationConfirmationController::class, 'validateToken']);

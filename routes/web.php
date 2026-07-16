@@ -30,6 +30,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // Users
         Route::get('/users', [AdminController::class, 'users'])->name('users.index');
+        Route::post('/users/bulk-approve', [AdminController::class, 'bulkApprove'])->name('users.bulkApprove');
         Route::get('/users/{user}', [AdminController::class, 'showUser'])->name('users.show');
         Route::post('/users/{user}/roles', [AdminController::class, 'updateUserRole'])->name('users.updateRole');
         Route::post('/users/{user}/approve', [AdminController::class, 'approveUser'])->name('users.approve');

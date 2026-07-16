@@ -106,6 +106,19 @@ class AdminController extends Controller
         return back()->with('success', "User {$user->name} has been approved.");
     }
 
+    public function bulkApprove(Request $request)
+    {
+        $request->validate([
+            'user_ids' => 'required|array',
+            'user_ids.*' => 'exists:users,id'
+        ]);
+
+        User::whereIn('id', $request->user_ids)->update(['status' => 'approved']);
+        
+        $count = count($request->user_ids);
+        return back()->with('success', "{$count} users have been approved.");
+    }
+
     public function rejectUser(User $user)
     {
         $user->update(['status' => 'rejected']);
